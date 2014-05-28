@@ -1,10 +1,11 @@
 import hashlib 
 import hmac
 import urllib2
-import simplejson
+import json as simplejson
+from keys import keys
 
-KEY = '' #fill in with your key
-SECRET = '' #fill in with your secret
+KEY = ''
+SECRET = ''
 API_URL = 'https://api.grooveshark.com/ws3.php?sig='
 SESSION_ID = ''
 country = {'ID': 221, 'CC1': 0, 'CC2': 0, 'CC3': 0, 'CC4': 0, 'DMA': 0, 'IPR': 0}
@@ -35,18 +36,17 @@ def api_call(method, parameters={}):
         
 def init(key='', secret=''):
     ''' Create session'''
-    if key and secret:
+    if keys:
         global KEY
         global SECRET
-        KEY = key
-        SECRET = secret
+        KEY = keys.key
+        SECRET = keys.secret
     response = api_call('startSession')    
     if response['result']['success'] == True:
         global SESSION_ID
         SESSION_ID = response['result']['sessionID']
     else:
         raise APIError(simplejson.dumps(response['errors']))
-        
 
 def authenticate_user(username, password):
     if SESSION_ID == '':
@@ -89,7 +89,7 @@ class APIError(Exception):
         return repr("There was a problem with your API request: " + self.message)
 
 
-# if __name__ == '__main__':
-#     init()
-#     url, artist, title = get_stream_from_query('kanye west')
-#     print url, artist, title
+if __name__ == '__main__':
+	init()
+	url, artist, title = get_stream_from_query('mew')
+	print url, artist, title
