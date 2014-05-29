@@ -4,6 +4,29 @@ Goal: to takes top recently played music from a LAST.FM user and sent it to GROO
 
 Language: python
 
+###keys.py 
+
+Not included in repository, but add your keys to a python file as such..
+
+```
+class grooveshark:
+    key = ''
+    secret = ''
+    username = ''
+    password = ''
+
+
+class lastfm:
+    key = ''
+    secret = ''
+    username = ''
+    password = ''
+```
+
+####last.fm api: [get API Key](http://www.last.fm/api/account/create), [documentation](http://www.last.fm/api)
+
+####grooveshark api: [request API key](http://developers.grooveshark.com/api), [documentation](http://developers.grooveshark.com/docs/public_api/v3/), [sandbox](http://developers.grooveshark.com/docs/public_api/v3/sandbox)
+
 ### pyLast
 [code.google.com/p/pylast/](https://code.google.com/p/pylast/)
 
