@@ -20,10 +20,21 @@ if __name__ == '__main__':
     raylinth = pylast.User('raylinth', LASTFM_NETWORK)
     print 'lastfm user: ', raylinth.name
 
-    recenttrack = raylinth.get_recent_tracks(1)[0].track
-    artist = recenttrack.get_artist().name
+    recenttracks = raylinth.get_recent_tracks()
+    lasttrack = recenttracks[0].track
+    artist = lasttrack.get_artist().name
+    print 'last listened to: ', lasttrack
 
-    print 'last artist: ', artist
+    # groovedata = GROOVESHARK_NETWORK.get_song_search_results(artist, limit=1)
+    # print '\ngrooveshark song search: \n', groovedata
+    # songID = groovedata['result']['songs'][0]['SongID']
+    #
+    # artistGS = groovedata['result']['songs'][0]['ArtistName']
+    # songGS = groovedata['result']['songs'][0]['SongName']
+    # if(artist == artistGS and lasttrack.title == songGS):
+    #     print 'MATCH'
+    #     match = True
+    # else:
+    #     match = False
 
-    groovedata = GROOVESHARK_NETWORK.get_song_search_results(artist, limit=1)
-    print '\ngrooveshark song search: \n\n', groovedata
+    #print SESSION_ID
