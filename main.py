@@ -64,7 +64,7 @@ if __name__ == '__main__':
     #print '\ncreate playlist\n', response
 
     # known existing playlist for my user
-    playlistID = 98294973
+    playlistID = 98318603
     # known existing song
     songID = 35760171
 
@@ -74,20 +74,47 @@ if __name__ == '__main__':
     playlistCheck = GROOVESHARK_NETWORK.api_call('getPlaylistSongs', {'playlistID': playlistID})
     print '\ncheck playlist exists\n', playlistCheck
 
+    songs = GROOVESHARK_NETWORK.api_call('getSongsInfo', {'songIDs': 35760171})['result']['songs']
+
+    print '\nsong:\n', songs
     # check song exists
-    songCheck = GROOVESHARK_NETWORK.api_call('getSongsInfo', {'songIDs': songID})
-    print '\ncheck song exists: ', songID
-    print songCheck
+    # songCheck = GROOVESHARK_NETWORK.api_call('getSongsInfo', {'songIDs': songs})
+    # print '\ncheck song exists: ', songID
+    # print songCheck
+    #
+    # # add to playlist
+    #print 'manually using playlist: ', playlistID
+    #
+    #response = GROOVESHARK_NETWORK.api_call('createPlaylist', {'name': 'generator', 'songIDs': songs})
+    songs = ['35760171']
 
-    # add to playlist
-    print 'manually using playlist: ', playlistID
-    response = GROOVESHARK_NETWORK.api_call('setPlaylistSongs', {'playlistID': playlistID, 'songIDs': songID})
-    print '\nadd to playlist:\n ', response['result']['success']
-    print response
+    playlists = GROOVESHARK_NETWORK.api_call('getUserPlaylists',  {'limit': 50})['result']['playlists']
 
-    if not response['result']['success']:
-        print '\nWHY NOT?'
+    playlist = False
+    for p in playlists:
+        if p['PlaylistName'] == 'generator':
+            playlist = p['PlaylistID']
 
-    # songIDs parameter is wrong?
-    # something is off..
+    if playlist:
+        print '\nUPDATING existing generator playlist... '
+        response = GROOVESHARK_NETWORK.api_call('setPlaylistSongs', {'playlistID': playlist, 'songIDs': songs})
+    else:
+        print '\nCREATING new generator playlis... '
+        response = GROOVESHARK_NETWORK.api_call('createPlaylist', {'name': 'generator', 'songIDs': songs})
+        playlist = response['result']['playlistID']
+
+    if response['result']['success']:
+        print 'successful\n'
+        playlistInfo = GROOVESHARK_NETWORK.api_call('getPlaylistInfo', {'playlistID': playlist})['result']
+        print 'playlist info\n', playlistInfo
+
+        playlistsongs = GROOVESHARK_NETWORK.api_call('getPlaylistSongs', {'playlistID': playlist})['result']['songs']
+        print '\nplaylist songs:\n', playlistsongs
+
+
+
+
+
+
+
 
