@@ -35,6 +35,7 @@ class GrooveSharkNetwork:
 
     def api_call(self, method, parameters={}):
         global API_URL
+        global SESSION_ID
         data = {}
         data['method'] = method
         data['parameters'] = parameters
