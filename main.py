@@ -1,6 +1,7 @@
 import sys
-import pylast
-import pygrooveshark
+import api.lastfm.pylast as pylast
+import api.grooveshark.grooveshark as pygrooveshark
+
 import hashlib
 from keys import lastfm, grooveshark
 
