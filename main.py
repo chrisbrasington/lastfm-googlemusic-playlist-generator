@@ -39,7 +39,10 @@ if __name__ == '__main__':
     # time range: last month to current date
     timerange = 30
 
-    # lastFM user   to pull history from
+    # grooveshark playlist name
+    playlistname = 'generator'
+
+    # lastFM user to pull history from
     print 'lastfm souce: ', source
 
     # get source LASTM user
@@ -100,10 +103,10 @@ if __name__ == '__main__':
     # get user's playlists
     playlists = GROOVESHARK_NETWORK.api_call('getUserPlaylists',  {'limit': 50})['result']['playlists']
 
-    # search for playlist named "generator"
+    # search for playlist name
     playlist = False
     for p in playlists:
-        if p['PlaylistName'] == 'generator':
+        if p['PlaylistName'] == playlistname:
             playlist = p['PlaylistID']
 
     # create or update playlist
@@ -112,7 +115,7 @@ if __name__ == '__main__':
         response = GROOVESHARK_NETWORK.api_call('setPlaylistSongs', {'playlistID': playlist, 'songIDs': songs})
     else:
         print '\nCREATING new generator playlist... '
-        response = GROOVESHARK_NETWORK.api_call('createPlaylist', {'name': 'generator', 'songIDs': songs})
+        response = GROOVESHARK_NETWORK.api_call('createPlaylist', {'name': playlistname, 'songIDs': songs})
         playlist = response['result']['playlistID']
 
     # check playlist
