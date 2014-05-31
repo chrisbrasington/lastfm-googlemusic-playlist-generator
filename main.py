@@ -42,10 +42,10 @@ if __name__ == '__main__':
     # lastFM user   to pull history from
     print 'lastfm souce: ', source
 
-    # get recent tracks of LASTM user
+    # get source LASTM user
     source = pylast.User(source, LASTFM_NETWORK)
 
-    # for last month (not yet made this variable)
+    # set time range - default last month
     from_date = converttimestamp(datetime.datetime.today() - datetime.timedelta(days=timerange))
 
     # request lastFM user.getWeeklyTrackChart
