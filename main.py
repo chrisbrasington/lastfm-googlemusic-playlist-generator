@@ -1,20 +1,25 @@
 import sys
 import api.lastfm.pylast as pylast
 import api.grooveshark.grooveshark as pygrooveshark
+import api.tinysong.pytinysong.request as pytinysong
 
 import hashlib
-from keys import lastfm, grooveshark
+from keys import lastfm, grooveshark, tinysong
 
 LASTFM_NETWORK = ''
 GROOVESHARK_NETWORK = ''
+TINYSONG_NETWORK = ''
 
 # initialize LASTFM and GROOVESHARK API connections
 def init():
     global LASTFM_NETWORK
     global GROOVESHARK_NETWORK
+    global TINYSONG_NETWORK
     LASTFM_NETWORK = pylast.LastFMNetwork(api_key=lastfm.key, api_secret=lastfm.secret, username=lastfm.username,
                                           password_hash=pylast.md5(lastfm.password))
     GROOVESHARK_NETWORK = pygrooveshark.GrooveSharkNetwork()
+
+    TINYSONG_NETWORK = pytinysong.TinySongRequest(api_key=tinysong.key)
 
 # off we go!
 if __name__ == '__main__':
@@ -26,6 +31,15 @@ if __name__ == '__main__':
     lastFMrecenttracks = raylinth.get_recent_tracks()
     print 'received recent lastFM tracks'
 
+    for lastFMtrack in lastFMrecenttracks:
+        title = lastFMtrack.track.title.lower()
+        artist = lastFMtrack.track.artist.name.lower()
+        results= TINYSONG_NETWORK.search(title)
+        for song in results:
+            print(song.artist_name, '-', song.song_name)
+        print '----------'
+
+    '''
     print 'searching for songs in grooveshark...\n'
     songs = []
     for lastFMtrack in lastFMrecenttracks:
@@ -89,6 +103,10 @@ if __name__ == '__main__':
             print song['SongName'], ' - ', song['ArtistName']
 
     print 'done'
+    '''
+
+
+
 
 
 
