@@ -1,8 +1,8 @@
-import sys
 import api.lastfm.pylast as pylast
 import api.grooveshark.grooveshark as pygrooveshark
 import api.tinysong.pytinysong.request as pytinysong
-
+import datetime
+import time
 import hashlib
 from keys import lastfm, grooveshark, tinysong
 
@@ -10,58 +10,83 @@ LASTFM_NETWORK = ''
 GROOVESHARK_NETWORK = ''
 TINYSONG_NETWORK = ''
 
-# initialize LASTFM and GROOVESHARK API connections
+# initialize LASTFM, TINYSONG, and GROOVESHARK API connections
 def init():
     global LASTFM_NETWORK
     global GROOVESHARK_NETWORK
     global TINYSONG_NETWORK
+
     LASTFM_NETWORK = pylast.LastFMNetwork(api_key=lastfm.key, api_secret=lastfm.secret, username=lastfm.username,
                                           password_hash=pylast.md5(lastfm.password))
+
     GROOVESHARK_NETWORK = pygrooveshark.GrooveSharkNetwork()
 
     TINYSONG_NETWORK = pytinysong.TinySongRequest(api_key=tinysong.key)
 
+# convert datetime object to timestamp
+def converttimestamp(t):
+    timestamp = time.mktime(t.timetuple()) + t.microsecond / 1E6
+    return timestamp
+
 # off we go!
 if __name__ == '__main__':
+    # initialize API networks
     init()
 
-    # get recent tracks of LASTM user
-    raylinth = pylast.User('raylinth', LASTFM_NETWORK)
-    print 'lastfm user: ', raylinth.name
-    lastFMrecenttracks = raylinth.get_recent_tracks()
-    print 'received recent lastFM tracks'
+    # lastFM user to create playlist from
+    source = 'eclisiast'
 
-    for lastFMtrack in lastFMrecenttracks:
-        title = lastFMtrack.track.title.lower()
-        artist = lastFMtrack.track.artist.name.lower()
-        results= TINYSONG_NETWORK.search(title)
+    # time range: last month to current date
+    timerange = 30
+
+    # lastFM user   to pull history from
+    print 'lastfm souce: ', source
+
+    # get recent tracks of LASTM user
+    source = pylast.User(source, LASTFM_NETWORK)
+
+    # for last month (not yet made this variable)
+    from_date = converttimestamp(datetime.datetime.today() - datetime.timedelta(days=timerange))
+
+    # request lastFM user.getWeeklyTrackChart
+    print '\nrequesting recent lastFM tracks...'
+    lastFMrecenttracks = source.get_weekly_track_charts(from_date)
+
+    print 'received recent lastFM tracks'
+    print 'grabbing IDs from TINYSONG...\n'
+    print '----------'
+
+    # song IDs array
+    songs = []
+
+    # find IDs from TINYSONG
+    # limit to 20 searches to avoid exceeding rate limit
+    count = 0
+    limit = 20
+    for t in lastFMrecenttracks:
+
+        # artist, track title information, unicode safe
+        track = t.item
+        artist = track.artist.name.encode('utf-8').strip()
+        title = track.title.encode('utf-8').strip()
+        print artist, ' - ', title
+
+        # search TINYSONG api
+        results = TINYSONG_NETWORK.search(title+' '+artist)
+
+        # accept 1st search result (seems pretty accurate)
         for song in results:
-            print(song.artist_name, '-', song.song_name)
+            print 'ID: ', song.song_id, ' ', song.artist_name, '-', song.song_name
+        if results.__len__() > 0:
+            songs.append(results[0].song_id)
+        else:
+            print 'Not Found, Skipping'
         print '----------'
 
-    '''
-    print 'searching for songs in grooveshark...\n'
-    songs = []
-    for lastFMtrack in lastFMrecenttracks:
-        title = lastFMtrack.track.title.lower()
-        artist = lastFMtrack.track.artist.name.lower()
-
-        groovedata = GROOVESHARK_NETWORK.get_song_search_results(lastFMtrack.track.title)
-
-        ####################################
-        # problem with exceeding rate limit!
-        # need to switch song searching to tinysong API
-
-        if 'errors' in groovedata:
-            for error in groovedata['errors']:
-                print error['message']
-            sys.exit()
-
-        for track in groovedata['result']['songs']:
-            if track['SongName'].lower() == title and track['ArtistName'].lower() == artist:
-               songs.append(track['SongID'])
-               print 'found match: ', track['SongName'], ' - ', track['ArtistName']
-            break;
+        # break if at limit
+        if count == limit:
+            break
+        count += 1
 
     # start the grooveshark session
     sessionID = GROOVESHARK_NETWORK.api_call('startSession')['result']['sessionID']
@@ -70,11 +95,12 @@ if __name__ == '__main__':
     # authenticate grooveshark user
     token = hashlib.md5(grooveshark.username.lower() + hashlib.md5(grooveshark.password).hexdigest()).hexdigest()
     auth = GROOVESHARK_NETWORK.api_call('authenticateUser', {'username': grooveshark.username, 'token': token})
-    print '\nauthentication: \n', auth['result']['success']
+    print '\nauthentication: ', auth['result']['success']
 
     # get user's playlists
     playlists = GROOVESHARK_NETWORK.api_call('getUserPlaylists',  {'limit': 50})['result']['playlists']
 
+    # search for playlist named "generator"
     playlist = False
     for p in playlists:
         if p['PlaylistName'] == 'generator':
@@ -102,8 +128,7 @@ if __name__ == '__main__':
         for song in playlistsongs:
             print song['SongName'], ' - ', song['ArtistName']
 
-    print 'done'
-    '''
+    print '\nPlaylist generation complete.'
 
 
 
