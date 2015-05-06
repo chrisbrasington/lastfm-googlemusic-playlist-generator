@@ -1,6 +1,6 @@
 #lastfm-googlemusic-playlist-generator
 Python script which generates a google-music playlist from a lastFM user's play history for a time range.
-Default time range is last month. Top songs are picked. Default playlist size is 20. Any lastFM user can be declared the source.
+Default time range is last month. Top songs are picked. Any lastFM user can be declared the source.
 
 ###last.fm api: [generate API Key](http://www.last.fm/api/account/create), [documentation](http://www.last.fm/api)
 #### pyLast
