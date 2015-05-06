@@ -14,9 +14,16 @@ def init():
     global LASTFM_NETWORK
     global GOOGLE_NETWORK
 
-    LASTFM_NETWORK = pylast.LastFMNetwork(api_key=lastfm.key, api_secret=lastfm.secret, username=lastfm.username,
-                                          password_hash=pylast.md5(lastfm.password))
+    username = raw_input('lastfm username: ')
+    password = getpass.getpass('password: ')
 
+    try:
+        LASTFM_NETWORK = pylast.LastFMNetwork(api_key=lastfm.key, api_secret=lastfm.secret, username=username,
+                                          password_hash=pylast.md5(password))
+    except:
+        print 'Failure to login to lastFM\n'
+
+    print 'Logged into lastFM'
     GOOGLE_NETWORK = Mobileclient()
 
     google_login()
@@ -70,7 +77,7 @@ if __name__ == '__main__':
     init()
 
     # lastFM user to create playlist from
-    source = raw_input('LastFM UserName: ').lower()
+    source = raw_input('Source LastFM UserName: ').lower()
 
     # time range: last month to current date
     timerange = 30

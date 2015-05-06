@@ -2,6 +2,8 @@
 Python script which generates a google-music playlist from a lastFM user's play history for a time range.
 Default time range is last month. Top songs are picked. Any lastFM user can be declared the source.
 
+User is asked to authenticate to both lastFM and googleMUSIC.
+
 ###last.fm api: [generate API Key](http://www.last.fm/api/account/create), [documentation](http://www.last.fm/api)
 #### pyLast
 [code.google.com/p/pylast/](https://code.google.com/p/pylast/)
@@ -17,9 +19,6 @@ Not included in repository, but add your keys to a python file as such..
 class lastfm:
     key = ''
     secret = ''
-
-    username = ''
-    password = ''
 
 ```
 
