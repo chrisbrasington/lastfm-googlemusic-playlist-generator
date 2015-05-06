@@ -2,3 +2,4 @@
 .idea/
 keys.py
 gmusicapi
+__init__.py
