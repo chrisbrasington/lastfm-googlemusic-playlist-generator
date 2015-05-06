@@ -1,27 +1,44 @@
-import api.lastfm.pylast as pylast
-import api.grooveshark.grooveshark as pygrooveshark
-import api.tinysong.pytinysong.request as pytinysong
-import datetime
-import time
-import hashlib
-from keys import lastfm, grooveshark, tinysong
+import pylast
+from gmusicapi import Mobileclient
+import datetime, time
+from pprint import pprint
+from keys import lastfm
+
 
 LASTFM_NETWORK = ''
-GROOVESHARK_NETWORK = ''
-TINYSONG_NETWORK = ''
+GOOGLE_NETWORK = ''#gmusicapi.MobileClient()
 
 # initialize LASTFM, TINYSONG, and GROOVESHARK API connections
 def init():
     global LASTFM_NETWORK
-    global GROOVESHARK_NETWORK
-    global TINYSONG_NETWORK
+    global GOOGLE_NETWORK
 
     LASTFM_NETWORK = pylast.LastFMNetwork(api_key=lastfm.key, api_secret=lastfm.secret, username=lastfm.username,
                                           password_hash=pylast.md5(lastfm.password))
 
-    GROOVESHARK_NETWORK = pygrooveshark.GrooveSharkNetwork()
+    GOOGLE_NETWORK = Mobileclient()
 
-    TINYSONG_NETWORK = pytinysong.TinySongRequest(api_key=tinysong.key)
+# authenticate with google music
+def login():
+    '''
+    global api
+
+    logged_in = False
+
+    # ask user for credentials if not loaded
+    if 'google' not in globals():
+        username = raw_input('google email: ')
+        password = getpass.getpass('password: ')
+        logged_in = api.login(username, password)   
+    else:
+        logged_in = api.login(google.username, google.password)
+
+    if logged_in:
+        return True
+    else:
+        print 'unable to login to google music'
+        return False
+    '''
 
 # convert datetime object to timestamp
 def converttimestamp(t):
@@ -34,7 +51,8 @@ if __name__ == '__main__':
     init()
 
     # lastFM user to create playlist from
-    source = 'eclisiast'
+    source = 'raylinth'
+    #source = raw_input('UserName: ').lower()
 
     # time range: last month to current date
     timerange = 30
@@ -55,6 +73,10 @@ if __name__ == '__main__':
     print '\nrequesting recent lastFM tracks...'
     lastFMrecenttracks = source.get_weekly_track_charts(from_date)
 
+    for tracks in lastFMrecenttracks:
+        print tracks.item
+
+    '''
     print 'received recent lastFM tracks'
     print 'grabbing IDs from TINYSONG...\n'
     print '----------'
@@ -132,7 +154,7 @@ if __name__ == '__main__':
             print song['SongName'], ' - ', song['ArtistName']
 
     print '\nPlaylist generation complete.'
-
+    '''
 
 
 
