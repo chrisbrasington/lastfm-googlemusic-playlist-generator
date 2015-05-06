@@ -7,9 +7,9 @@ from keys import lastfm
 import sys
 
 LASTFM_NETWORK = ''
-GOOGLE_NETWORK = ''#gmusicapi.MobileClient()
+GOOGLE_NETWORK = ''
 
-# initialize LASTFM, TINYSONG, and GROOVESHARK API connections
+# initialize LASTFM and GOOGLEMUSIC API
 def init():
     global LASTFM_NETWORK
     global GOOGLE_NETWORK
@@ -49,7 +49,7 @@ def convert_time_stamp(t):
 
 # get individual song ID for google musc
 def get_song_id(song):
-    GOOGLE_NETWORK
+    global GOOGLE_NETWORK
     try:
     	result = GOOGLE_NETWORK.search_all_access(song,10)
     # occasionally creating bad search
@@ -91,19 +91,20 @@ if __name__ == '__main__':
     print '\nrequesting last month\'s lastFM tracks...'
     lastFMrecenttracks = source.get_weekly_track_charts(from_date)
 
+    # for each track found in lastFM's recent tracks
     for tracks in lastFMrecenttracks:
-        #search = str(tracks.item.artist) + ' - ' + str(tracks.item.title)
+        # search for song_id in google music
         search = str(tracks.item)
         id = get_song_id(search)
         print search,
         if(id):
-            #song_ids.append(id)
             print str(tracks.item)
             song_ids.append(id)
             print ' ('+ id +')'
         else:
             print ' (not found)'
 
+    # create playlist in google music
     print '\nCreating playlist: ' + playlist_name
     playlist_id = GOOGLE_NETWORK.create_playlist(playlist_name)
     
